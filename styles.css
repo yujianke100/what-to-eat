@@ -142,28 +142,32 @@ button:hover {
     align-items: center; /* Align items vertically centered */
     gap: 5px; /* Reduce gap between elements */
     margin: 10px 20px; /* Add horizontal margin for spacing */
+    justify-content: center; /* Center align the input row */
 }
 
 .input-row label {
     font-weight: bold;
     white-space: nowrap; /* Prevent labels from wrapping */
-    margin: 0; /* Remove extra margin to align with input fields */
+    padding-left: 5px; 
+    margin: 0;
+    padding-right: 5px; /* Add small padding for spacing between label and input */
+}
+
+.input-row input[type="text"],
+.input-row input[type="number"] {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+    margin: 0;
 }
 
 .input-row input[type="text"] {
     flex: 1; /* Full width for keyword input */
-    padding: 5px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-sizing: border-box;
 }
 
 .input-row input[type="number"] {
-    width: 100px; /* Shorter width for range input */
-    padding: 5px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-sizing: border-box;
+    width: 40px; /* Shorter width for range input */
 }
 
 @media (max-width: 600px) {
