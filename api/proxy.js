@@ -15,9 +15,15 @@ export default async function handler(req, res) {
         const response = await fetch(url);
 
         if (!response.ok) {
-            const errorText = await response.text();
+            const errorText = await response.text(); // Read the response as text
             console.error(`Google API error: ${errorText}`);
             return res.status(response.status).json({ error: `Google API error: ${errorText}` });
+        }
+
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            console.error('Unexpected content type:', contentType);
+            return res.status(500).json({ error: 'Unexpected response format from Google Maps API' });
         }
 
         const data = await response.json();

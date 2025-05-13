@@ -77,8 +77,9 @@ function searchRestaurants() {
     fetch(url)
         .then(response => {
             if (!response.ok) {
-                return response.json().then(err => {
-                    throw new Error(`HTTP error! status: ${response.status}, message: ${err.error}`);
+                return response.json().catch(() => {
+                    // Handle non-JSON error responses
+                    throw new Error(`HTTP error! status: ${response.status}, message: ${response.statusText}`);
                 });
             }
             return response.json();
