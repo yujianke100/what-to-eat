@@ -28,7 +28,7 @@ label {
     font-weight: bold;
 }
 
-input[type="text"],
+input[type="password"],
 input[type="number"] {
     width: calc(100% - 40px);
     max-width: 400px;
