@@ -1,0 +1,184 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    background-color: #f9f9f9;
+    color: #333;
+}
+
+h1 {
+    background-color: #4CAF50;
+    color: white;
+    padding: 15px 0;
+    margin: 0;
+    font-size: 24px;
+}
+
+#map {
+    width: 100%;
+    height: 300px;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+}
+
+label {
+    display: block;
+    margin: 10px 0 5px;
+    font-weight: bold;
+}
+
+input[type="text"],
+input[type="number"] {
+    width: calc(100% - 40px);
+    max-width: 400px;
+    padding: 10px;
+    margin: 0 auto 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+button {
+    display: block;
+    width: calc(100% - 40px);
+    max-width: 400px;
+    margin: 10px auto;
+    padding: 10px;
+    font-size: 16px;
+    color: white;
+    background-color: #4CAF50;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+#restaurant-list {
+    list-style: none;
+    padding: 0;
+    max-height: 200px;
+    overflow-y: auto;
+    margin: 20px auto;
+    width: calc(100% - 40px);
+    max-width: 400px;
+    text-align: left;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+#restaurant-list li {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+#restaurant-list li.selected {
+    background-color: #4CAF50;
+    color: white;
+}
+
+#restaurant-list li.unselected {
+    background-color: #f9f9f9;
+    color: #aaa;
+}
+
+#restaurant-list li:last-child {
+    border-bottom: none;
+}
+
+#restaurant-list input {
+    margin-right: 10px;
+}
+
+#result {
+    font-size: 24px; /* Increase font size */
+    font-weight: bold;
+    margin-top: 20px;
+    padding: 10px;
+    border: 2px solid transparent; /* Hide border initially */
+    border-radius: 8px; /* Rounded corners */
+    background-color: transparent; /* Hide background initially */
+    color: transparent; /* Hide text initially */
+    display: inline-block; /* Shrink to fit content */
+    white-space: pre-line; /* Allow line breaks for restaurant name */
+    text-align: center; /* Center align text */
+    transition: all 0.3s ease; /* Smooth transition for hover effect */
+}
+
+#result.visible {
+    border-color: #388E3C; /* Show green border when visible */
+    background-color: #E8F5E9; /* Light green background */
+    color: #388E3C; /* Green text color */
+}
+
+#result:hover.visible {
+    background-color: #C8E6C9; /* Slightly darker green background on hover */
+    border-color: #2E7D32; /* Darker green border on hover */
+    color: #2E7D32; /* Darker green text on hover */
+}
+
+#result.highlight {
+    color: #FF5722; /* Highlight color for random result */
+}
+
+#api-key-section {
+    display: none;
+    margin: 20px auto;
+}
+
+#main-content {
+    display: none;
+}
+
+.input-row {
+    display: flex;
+    align-items: flex-start; /* Align items at the top */
+    gap: 10px;
+    margin: 10px 20px; /* Add horizontal margin for spacing */
+}
+
+.input-row label {
+    font-weight: bold;
+    white-space: nowrap; /* Prevent labels from wrapping */
+    margin-top: 5px; /* Add margin to align with input fields */
+}
+
+.input-row input[type="text"] {
+    flex: 1; /* Full width for keyword input */
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.input-row input[type="number"] {
+    width: 100px; /* Shorter width for range input */
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+@media (max-width: 600px) {
+    h1 {
+        font-size: 20px;
+    }
+
+    button,
+    input[type="text"],
+    input[type="number"] {
+        font-size: 14px;
+        padding: 8px;
+    }
+
+    #map {
+        height: 200px;
+    }
+}
