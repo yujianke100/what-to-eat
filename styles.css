@@ -153,7 +153,7 @@ button:hover {
     padding-right: 5px; /* Add small padding for spacing between label and input */
 }
 
-.input-row input[type="text"],
+.input-row input[type="password"],
 .input-row input[type="number"] {
     padding: 5px;
     border: 1px solid #ccc;
@@ -162,7 +162,7 @@ button:hover {
     margin: 0;
 }
 
-.input-row input[type="text"] {
+.input-row input[type="password"] {
     flex: 1; /* Full width for keyword input */
 }
 
@@ -176,7 +176,7 @@ button:hover {
     }
 
     button,
-    input[type="text"],
+    input[type="password"],
     input[type="number"] {
         font-size: 14px;
         padding: 8px;
