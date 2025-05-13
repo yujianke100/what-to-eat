@@ -66,36 +66,25 @@ function initializeRestaurantList() {
 }
 
 function searchRestaurants() {
+    initializeRestaurantList(); // Ensure the "+" option is always present
+
     const range = parseFloat(document.getElementById('range').value) * 1000; // Convert km to meters
     const location = map.getCenter().toJSON(); // Use map center as search location
     const { lat, lng } = location;
 
     const keyword = document.getElementById('keyword').value || 'restaurant';
-    const backendProxy = '/api/proxy'; // Update the proxy URL to Vercel's API route
+    const backendProxy = 'http://localhost:3000/proxy';
     const url = `${backendProxy}?location=${lat},${lng}&radius=${range}&type=restaurant&keyword=${encodeURIComponent(keyword)}&key=${googleApiKey}`;
 
     fetch(url)
         .then(response => {
             if (!response.ok) {
-                return response.json().catch(() => {
-                    // Handle non-JSON error responses
-                    throw new Error(`HTTP error! status: ${response.status}, message: ${response.statusText}`);
-                });
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
             return response.json();
         })
         .then(data => {
             const list = document.getElementById('restaurant-list');
-            list.innerHTML = '';
-
-            // Add the "+" button for custom input
-            const addCustomLi = document.createElement('li');
-            addCustomLi.textContent = '+ Add Custom Option';
-            addCustomLi.style.cursor = 'pointer';
-            addCustomLi.style.color = '#4CAF50';
-            addCustomLi.style.fontWeight = 'bold';
-            addCustomLi.addEventListener('click', () => addCustomOption(list));
-            list.appendChild(addCustomLi);
 
             // Populate the list with search results
             data.results.forEach((place, index) => {
@@ -110,7 +99,7 @@ function searchRestaurants() {
         })
         .catch(error => {
             console.error("Error fetching data from proxy:", error);
-            alert(`Failed to fetch restaurants: ${error.message}`);
+            alert("Failed to fetch restaurants. Please check your API key and parameters.");
         });
 }
 
