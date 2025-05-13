@@ -5,6 +5,7 @@ export default async function handler(req, res) {
 
     // Validate required query parameters
     if (!location || !radius || !type || !key) {
+        console.error('Missing required query parameters:', req.query);
         return res.status(400).json({ error: 'Missing required query parameters' });
     }
 
@@ -12,6 +13,13 @@ export default async function handler(req, res) {
 
     try {
         const response = await fetch(url);
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error(`Google API error: ${errorText}`);
+            return res.status(response.status).json({ error: `Google API error: ${errorText}` });
+        }
+
         const data = await response.json();
         res.status(200).json(data);
     } catch (error) {

@@ -77,7 +77,9 @@ function searchRestaurants() {
     fetch(url)
         .then(response => {
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                return response.json().then(err => {
+                    throw new Error(`HTTP error! status: ${response.status}, message: ${err.error}`);
+                });
             }
             return response.json();
         })
@@ -107,7 +109,7 @@ function searchRestaurants() {
         })
         .catch(error => {
             console.error("Error fetching data from proxy:", error);
-            alert("Failed to fetch restaurants. Please check your API key and parameters.");
+            alert(`Failed to fetch restaurants: ${error.message}`);
         });
 }
 
