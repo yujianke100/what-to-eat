@@ -73,8 +73,7 @@ function searchRestaurants() {
     const { lat, lng } = location;
 
     const keyword = document.getElementById('keyword').value || 'restaurant';
-    const backendProxy = 'http://localhost:3000/proxy';
-    const url = `${backendProxy}?location=${lat},${lng}&radius=${range}&type=restaurant&keyword=${encodeURIComponent(keyword)}&key=${googleApiKey}`;
+    const url = `/proxy?location=${lat},${lng}&radius=${range}&type=restaurant&keyword=${encodeURIComponent(keyword)}&key=${googleApiKey}`;
 
     fetch(url)
         .then(response => {
