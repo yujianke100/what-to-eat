@@ -9,7 +9,7 @@ function loadGoogleMapsAPI() {
     const loader = new google.maps.plugins.loader.Loader({
         apiKey: googleApiKey,
         version: 'weekly',
-        libraries: ['marker']
+        libraries: ['marker', 'places']
     });
 
     loader
@@ -70,37 +70,36 @@ function searchRestaurants() {
     initializeRestaurantList(); // Ensure the "+" option is always present
 
     const range = parseFloat(document.getElementById('range').value) * 1000; // Convert km to meters
-    const location = map.getCenter().toJSON(); // Use map center as search location
-    const { lat, lng } = location;
-
+    const location = map.getCenter(); // Use map center as search location
     const keyword = document.getElementById('keyword').value || 'restaurant';
-    const url = `/proxy?location=${lat},${lng}&radius=${range}&type=restaurant&keyword=${encodeURIComponent(keyword)}&key=${googleApiKey}`;
 
-    fetch(url)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
+    const service = new google.maps.places.PlacesService(map);
+    const request = {
+        location,
+        radius: range,
+        keyword,
+        type: 'restaurant'
+    };
+
+    service.nearbySearch(request, (results, status) => {
+        if (status === google.maps.places.PlacesServiceStatus.OK) {
             const list = document.getElementById('restaurant-list');
 
             // Populate the list with search results
-            data.results.forEach((place, index) => {
+            results.forEach((place, index) => {
                 const li = document.createElement('li');
                 li.textContent = place.name;
-                li.dataset.lat = place.geometry.location.lat;
-                li.dataset.lng = place.geometry.location.lng;
+                li.dataset.lat = place.geometry.location.lat();
+                li.dataset.lng = place.geometry.location.lng();
                 li.classList.add('selected'); // Default to selected
                 li.addEventListener('click', () => toggleSelection(li));
                 list.appendChild(li);
             });
-        })
-        .catch(error => {
-            console.error("Error fetching data from proxy:", error);
-            alert("Failed to fetch restaurants. Please check your API key and parameters.");
-        });
+        } else {
+            console.error("Places API error:", status);
+            alert("Failed to fetch restaurants. Please try again.");
+        }
+    });
 }
 
 function addCustomOption(list) {
