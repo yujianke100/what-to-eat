@@ -1,11 +1,6 @@
-let map, userMarker, searchMarker, googleApiKey;
+let map, userMarker, searchMarker, googleApiKey, amapApiKey, mapProvider;
 
 function loadGoogleMapsAPI() {
-    if (!googleApiKey) {
-        console.error("Google API key is not set.");
-        return;
-    }
-
     const loader = new google.maps.plugins.loader.Loader({
         apiKey: googleApiKey,
         version: 'weekly',
@@ -21,6 +16,18 @@ function loadGoogleMapsAPI() {
         .catch(e => {
             console.error("Error loading Google Maps API", e);
         });
+}
+
+function loadAmapAPI() {
+    const script = document.createElement('script');
+    script.src = `https://webapi.amap.com/maps?v=2.0&key=${amapApiKey}`;
+    script.async = true;
+    script.defer = true;
+    script.onload = () => {
+        console.log("Amap API loaded successfully.");
+        onAmapLoaded(); // Call the initialization function after loading
+    };
+    document.head.appendChild(script);
 }
 
 function onGoogleMapsLoaded() {
@@ -51,6 +58,23 @@ function onGoogleMapsLoaded() {
     }, () => alert("Unable to fetch location"));
 }
 
+function onAmapLoaded() {
+    map = new AMap.Map('map', {
+        zoom: 15,
+        center: [116.397428, 39.90923], // Default to Beijing
+    });
+
+    map.on('click', event => {
+        const { lng, lat } = event.lnglat;
+        if (searchMarker) map.remove(searchMarker); // Remove previous marker
+        searchMarker = new AMap.Marker({
+            position: [lng, lat],
+            map,
+            title: "Search Location"
+        });
+    });
+}
+
 function initializeRestaurantList() {
     const list = document.getElementById('restaurant-list');
     list.innerHTML = '';
@@ -69,11 +93,19 @@ function searchRestaurants() {
     initializeRestaurantList(); // Ensure the "+" option is always present
 
     const range = parseFloat(document.getElementById('range').value) * 1000; // Convert km to meters
-    const location = map.getCenter().toJSON(); // Use map center as search location
-    const { lat, lng } = location;
-
     const keyword = document.getElementById('keyword').value || 'restaurant';
-    const url = `/proxy?location=${lat},${lng}&radius=${range}&type=restaurant&keyword=${encodeURIComponent(keyword)}&key=${googleApiKey}`;
+    const location = mapProvider === 'google'
+        ? map.getCenter().toJSON() // Google Maps uses lat/lng object
+        : map.getCenter(); // Amap uses [lng, lat] array
+
+    const latLng = mapProvider === 'google'
+        ? `${location.lat},${location.lng}`
+        : `${location.lng},${location.lat}`;
+
+    const backendProxy = '/proxy';
+    const url = mapProvider === 'google'
+        ? `${backendProxy}?mapProvider=google&location=${latLng}&radius=${range}&type=restaurant&keyword=${encodeURIComponent(keyword)}&key=${googleApiKey}`
+        : `${backendProxy}?mapProvider=amap&location=${latLng}&radius=${range}&types=050000&keywords=${encodeURIComponent(keyword)}&key=${amapApiKey}`;
 
     fetch(url)
         .then(response => {
@@ -86,11 +118,12 @@ function searchRestaurants() {
             const list = document.getElementById('restaurant-list');
 
             // Populate the list with search results
-            data.results.forEach((place, index) => {
+            const results = mapProvider === 'google' ? data.results : data.pois;
+            results.forEach((place, index) => {
                 const li = document.createElement('li');
-                li.textContent = place.name;
-                li.dataset.lat = place.geometry.location.lat;
-                li.dataset.lng = place.geometry.location.lng;
+                li.textContent = mapProvider === 'google' ? place.name : place.name;
+                li.dataset.lat = mapProvider === 'google' ? place.geometry.location.lat : place.location.split(',')[1];
+                li.dataset.lng = mapProvider === 'google' ? place.geometry.location.lng : place.location.split(',')[0];
                 li.classList.add('selected'); // Default to selected
                 li.addEventListener('click', () => toggleSelection(li));
                 list.appendChild(li);
@@ -164,15 +197,28 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function setApiKey() {
-        googleApiKey = document.getElementById('api-key').value;
-        if (!googleApiKey) {
-            alert("Please enter a valid API key");
+        mapProvider = document.getElementById('map-provider').value;
+        googleApiKey = document.getElementById('google-api-key').value;
+        amapApiKey = document.getElementById('amap-api-key').value;
+
+        if (mapProvider === 'google' && !googleApiKey) {
+            alert("Please enter a valid Google Maps API key");
+            return;
+        }
+
+        if (mapProvider === 'amap' && !amapApiKey) {
+            alert("Please enter a valid Amap API key");
             return;
         }
 
         document.getElementById('api-key-section').style.display = 'none';
         document.getElementById('main-content').style.display = 'block';
-        loadGoogleMapsAPI(); // Load Google Maps API after setting the key
+
+        if (mapProvider === 'google') {
+            loadGoogleMapsAPI();
+        } else if (mapProvider === 'amap') {
+            loadAmapAPI();
+        }
     }
 
     const setApiKeyButton = document.getElementById('set-api-key');

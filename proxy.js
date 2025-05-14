@@ -10,34 +10,24 @@ app.use((req, res, next) => {
 });
 
 app.get('/proxy', async (req, res) => {
-    const { location, radius, type, keyword, key } = req.query;
+    const { mapProvider, location, radius, type, keyword, key } = req.query;
 
-    // Validate required query parameters
-    if (!location || !radius || !type || !key) {
-        console.error('Missing required query parameters:', req.query);
-        return res.status(400).send('Missing required query parameters');
+    let url;
+    if (mapProvider === 'google') {
+        url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${location}&radius=${radius}&type=${type}&keyword=${keyword || ''}&key=${key}`;
+    } else if (mapProvider === 'amap') {
+        url = `https://restapi.amap.com/v3/place/around?key=${key}&location=${location}&radius=${radius}&types=050000&keywords=${keyword || ''}`;
+    } else {
+        return res.status(400).send('Invalid map provider');
     }
 
-    // Add language parameter for Chinese map information
-    const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${location}&radius=${radius}&type=${type}&keyword=${keyword || ''}&key=${key}&language=zh-CN`;
-
     try {
-        const response = await fetch(url); // Use global fetch
-
-        // Log response status for debugging
-        console.log(`Google API response status: ${response.status}`);
-
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error(`Google API error: ${errorText}`);
-            return res.status(response.status).send(`Google API error: ${errorText}`);
-        }
-
+        const response = await fetch(url);
         const data = await response.json();
         res.json(data);
     } catch (error) {
-        console.error('Error fetching data from Google Maps API:', error);
-        res.status(500).send('Error fetching data from Google Maps API');
+        console.error('Error fetching data from map API:', error);
+        res.status(500).send('Error fetching data from map API');
     }
 });
 

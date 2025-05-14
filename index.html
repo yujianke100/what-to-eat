@@ -11,8 +11,15 @@
 <body>
     <h1>What to Eat</h1>
     <div id="api-key-section">
-        <label for="api-key">Google Maps API Key:</label>
-        <input type="password" id="api-key" placeholder="Enter your API key">
+        <label for="map-provider">Select Map Provider:</label>
+        <select id="map-provider">
+            <option value="google">Google Maps</option>
+            <option value="amap">Amap (高德地图)</option>
+        </select>
+        <label for="google-api-key">Google Maps API Key:</label>
+        <input type="password" id="google-api-key" placeholder="Enter your Google Maps API key">
+        <label for="amap-api-key">Amap API Key:</label>
+        <input type="password" id="amap-api-key" placeholder="Enter your Amap API key">
         <button id="set-api-key">Set API Key</button>
     </div>
     <div id="main-content">
