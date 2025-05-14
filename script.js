@@ -103,8 +103,8 @@ async function searchRestaurants() {
                 if (place.location && place.displayName) { // 确保数据完整
                     const li = document.createElement('li');
                     li.textContent = place.displayName; // 使用 camelCase 格式的字段
-                    li.dataset.lat = place.location.lat();
-                    li.dataset.lng = place.location.lng();
+                    li.dataset.lat = place.location.lat;
+                    li.dataset.lng = place.location.lng;
                     li.classList.add('selected'); // Default to selected
                     li.addEventListener('click', () => toggleSelection(li));
                     list.appendChild(li);
@@ -155,14 +155,12 @@ function pickRandom() {
 
     const randomIndex = Math.floor(Math.random() * selectedItems.length);
     const randomItem = selectedItems[randomIndex];
-
-    // 确保 lat 和 lng 是有效数字
     const lat = parseFloat(randomItem.dataset.lat);
     const lng = parseFloat(randomItem.dataset.lng);
 
     if (isNaN(lat) || isNaN(lng)) {
-        console.error("Invalid coordinates:", { lat, lng, randomItem });
-        alert("Failed to display the selected restaurant on the map. Please check the data.");
+        console.error("Invalid coordinates:", { lat, lng });
+        alert("Failed to display the selected restaurant on the map.");
         return;
     }
 
