@@ -134,29 +134,6 @@ button:hover {
     margin: 20px auto;
 }
 
-#api-key-section select,
-#api-key-section input[type="password"] {
-    width: calc(100% - 40px);
-    max-width: 400px;
-    padding: 10px;
-    margin: 10px auto;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-sizing: border-box;
-    display: block;
-}
-
-#api-key-section input[type="number"] {
-    width: calc(100% - 40px);
-    max-width: 400px;
-    padding: 10px;
-    margin: 10px auto;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-sizing: border-box;
-    display: block;
-}
-
 #main-content {
     display: none;
 }
