@@ -85,7 +85,8 @@ async function searchRestaurants() {
         // 调用 searchNearby 方法，传递正确的参数
         const response = await Place.searchNearby({
             locationRestriction,
-            includedTypes: ['restaurant'], // 指定类型
+            includedPrimaryTypes: ['restaurant'], // 确保仅包含餐馆类型
+            excludedPrimaryTypes: ['gas_station'], // 排除加油站类型
             fields: ['displayName', 'location'], // 请求所需字段
             language: 'zh-CN', // 设置语言为中文
             maxResultCount: 20 // 限制返回结果数量
@@ -99,13 +100,15 @@ async function searchRestaurants() {
 
             // Populate the list with search results
             results.forEach((place) => {
-                const li = document.createElement('li');
-                li.textContent = place.displayName; // 使用 camelCase 格式的字段
-                li.dataset.lat = place.location.lat;
-                li.dataset.lng = place.location.lng;
-                li.classList.add('selected'); // Default to selected
-                li.addEventListener('click', () => toggleSelection(li));
-                list.appendChild(li);
+                if (place.location && place.displayName) { // 确保数据完整
+                    const li = document.createElement('li');
+                    li.textContent = place.displayName; // 使用 camelCase 格式的字段
+                    li.dataset.lat = place.location.lat;
+                    li.dataset.lng = place.location.lng;
+                    li.classList.add('selected'); // Default to selected
+                    li.addEventListener('click', () => toggleSelection(li));
+                    list.appendChild(li);
+                }
             });
         } else {
             console.error("Unexpected results format:", results);
@@ -152,33 +155,37 @@ function pickRandom() {
 
     const randomIndex = Math.floor(Math.random() * selectedItems.length);
     const randomItem = selectedItems[randomIndex];
-    const result = randomItem.textContent.trim();
+    const lat = parseFloat(randomItem.dataset.lat);
+    const lng = parseFloat(randomItem.dataset.lng);
 
+    if (isNaN(lat) || isNaN(lng)) {
+        console.error("Invalid coordinates:", { lat, lng });
+        alert("Failed to display the selected restaurant on the map.");
+        return;
+    }
+
+    const result = randomItem.textContent.trim();
     resultElement.textContent = `You should eat at:\n${result}`; // Add line break for restaurant name
     resultElement.classList.add('visible'); // Add class to show border and background
 
-    // Pan the map to the selected restaurant only if it has location data
-    if (!randomItem.dataset.custom) {
-        const lat = parseFloat(randomItem.dataset.lat);
-        const lng = parseFloat(randomItem.dataset.lng);
-        map.setCenter({ lat, lng });
-        if (searchMarker) searchMarker.setMap(null);
-        searchMarker = new google.maps.marker.AdvancedMarkerElement({
-            position: { lat, lng },
-            map,
-            title: result
-        });
+    // Pan the map to the selected restaurant
+    map.setCenter({ lat, lng });
+    if (searchMarker) searchMarker.setMap(null);
+    searchMarker = new google.maps.marker.AdvancedMarkerElement({
+        position: { lat, lng },
+        map,
+        title: result
+    });
 
-        // 显示信息窗口
-        const infoWindow = new google.maps.InfoWindow({
-            content: `<div>
-                        <h3>${result}</h3>
-                        <a href="https://www.google.com/maps/search/?api=1&query=${lat},${lng}" target="_blank">Open in Google Maps</a>
-                      </div>`,
-        });
-        infoWindow.setPosition({ lat, lng });
-        infoWindow.open(map);
-    }
+    // 显示信息窗口
+    const infoWindow = new google.maps.InfoWindow({
+        content: `<div>
+                    <h3>${result}</h3>
+                    <a href="https://www.google.com/maps/search/?api=1&query=${lat},${lng}" target="_blank">Open in Google Maps</a>
+                  </div>`,
+    });
+    infoWindow.setPosition({ lat, lng });
+    infoWindow.open(map);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
