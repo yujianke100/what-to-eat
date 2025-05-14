@@ -103,8 +103,8 @@ async function searchRestaurants() {
                 if (place.location && place.displayName) { // 确保数据完整
                     const li = document.createElement('li');
                     li.textContent = place.displayName; // 使用 camelCase 格式的字段
-                    li.dataset.lat = place.location.lat;
-                    li.dataset.lng = place.location.lng;
+                    li.dataset.lat = place.location.lat();
+                    li.dataset.lng = place.location.lng();
                     li.classList.add('selected'); // Default to selected
                     li.addEventListener('click', () => toggleSelection(li));
                     list.appendChild(li);
