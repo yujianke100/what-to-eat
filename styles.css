@@ -173,6 +173,15 @@ button:hover {
     width: 40px; /* Shorter width for range input */
 }
 
+.centered-text {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0; /* 减少内部白边 */
+    font-size: 16px;
+    height: 50px; /* 设置高度以便于垂直居中 */
+}
+
 @media (max-width: 600px) {
     h1 {
         font-size: 20px;
