@@ -66,39 +66,55 @@ function initializeRestaurantList() {
     list.appendChild(addCustomLi);
 }
 
-function searchRestaurants() {
+async function searchRestaurants() {
     initializeRestaurantList(); // Ensure the "+" option is always present
 
     const range = parseFloat(document.getElementById('range').value) * 1000; // Convert km to meters
-    const location = map.getCenter(); // Use map center as search location
-    const keyword = document.getElementById('keyword').value || 'restaurant';
+    const center = map.getCenter(); // Use map center as search location
 
-    const place = new google.maps.places.Place({
-        location,
-        radius: range,
-        keyword,
-        type: 'restaurant'
-    });
+    try {
+        // 使用动态导入加载 Place 类
+        const { Place } = await google.maps.importLibrary("places");
 
-    place.findNearby((results, status) => {
-        if (status === google.maps.places.PlacesServiceStatus.OK) {
+        // 定义搜索区域，使用 CircleLiteral 格式
+        const locationRestriction = {
+            center: center.toJSON(), // 使用 toJSON() 方法获取 { lat, lng } 对象
+            radius: range
+        };
+
+        // 调用 searchNearby 方法，传递正确的参数
+        const response = await Place.searchNearby({
+            locationRestriction,
+            includedTypes: ['restaurant'], // 指定类型
+            fields: ['displayName', 'location'], // 请求所需字段
+            language: 'zh-CN', // 设置语言为中文
+            maxResultCount: 20 // 限制返回结果数量
+        });
+
+        // 提取 places 数组
+        const results = response.places;
+
+        if (Array.isArray(results)) {
             const list = document.getElementById('restaurant-list');
 
             // Populate the list with search results
-            results.forEach((place, index) => {
+            results.forEach((place) => {
                 const li = document.createElement('li');
-                li.textContent = place.name;
-                li.dataset.lat = place.geometry.location.lat();
-                li.dataset.lng = place.geometry.location.lng();
+                li.textContent = place.displayName; // 使用 camelCase 格式的字段
+                li.dataset.lat = place.location.lat;
+                li.dataset.lng = place.location.lng;
                 li.classList.add('selected'); // Default to selected
                 li.addEventListener('click', () => toggleSelection(li));
                 list.appendChild(li);
             });
         } else {
-            console.error("Places API error:", status);
+            console.error("Unexpected results format:", results);
             alert("Failed to fetch restaurants. Please try again.");
         }
-    });
+    } catch (error) {
+        console.error("Error using Place API:", error);
+        alert("Failed to fetch restaurants. Please try again.");
+    }
 }
 
 function addCustomOption(list) {
