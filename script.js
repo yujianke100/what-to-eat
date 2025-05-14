@@ -103,9 +103,13 @@ function searchRestaurants() {
         : `${location.lng},${location.lat}`;
 
     const backendProxy = '/proxy';
+    const maxPages = mapProvider === 'amap'
+        ? parseInt(document.getElementById('amap-max-pages').value, 10) || 1000
+        : undefined;
+
     const url = mapProvider === 'google'
         ? `${backendProxy}?mapProvider=google&location=${latLng}&radius=${range}&type=restaurant&keyword=${encodeURIComponent(keyword)}&key=${googleApiKey}`
-        : `${backendProxy}?mapProvider=amap&location=${latLng}&radius=${range}&types=餐饮服务&keywords=${encodeURIComponent(keyword)}&key=${amapApiKey}`;
+        : `${backendProxy}?mapProvider=amap&location=${latLng}&radius=${range}&types=餐饮服务&keywords=${encodeURIComponent(keyword)}&key=${amapApiKey}&maxPages=${maxPages}`;
 
     fetch(url)
         .then(response => {
