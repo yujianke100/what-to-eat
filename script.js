@@ -31,6 +31,7 @@ function onGoogleMapsLoaded() {
             zoom: 15,
             mapId: 'YOUR_MAP_ID', // Replace with a valid Map ID from Google Cloud Console
             mapTypeControl: false, // Disable Map and Satellite options
+            fullscreenControl: true, // 启用全屏按钮
         });
 
         userMarker = new google.maps.marker.AdvancedMarkerElement({
@@ -153,6 +154,16 @@ function pickRandom() {
             map,
             title: result
         });
+
+        // 显示信息窗口
+        const infoWindow = new google.maps.InfoWindow({
+            content: `<div>
+                        <h3>${result}</h3>
+                        <a href="https://www.google.com/maps/search/?api=1&query=${lat},${lng}" target="_blank">Open in Google Maps</a>
+                      </div>`,
+        });
+        infoWindow.setPosition({ lat, lng });
+        infoWindow.open(map);
     }
 }
 
