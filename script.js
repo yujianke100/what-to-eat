@@ -119,7 +119,7 @@ function searchRestaurants() {
 
             // Populate the list with search results
             const results = mapProvider === 'google' ? data.results : data.pois;
-            results.forEach((place, index) => {
+            results.forEach((place) => {
                 const li = document.createElement('li');
                 li.textContent = mapProvider === 'google' ? place.name : place.name;
                 li.dataset.lat = mapProvider === 'google' ? place.geometry.location.lat : place.location.split(',')[1];

@@ -16,7 +16,7 @@ app.get('/proxy', async (req, res) => {
     if (mapProvider === 'google') {
         url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${location}&radius=${radius}&type=${type}&keyword=${keyword || ''}&key=${key}`;
     } else if (mapProvider === 'amap') {
-        url = `https://restapi.amap.com/v3/place/around?key=${key}&location=${location}&radius=${radius}&types=050000&keywords=${keyword || ''}`;
+        url = `https://restapi.amap.com/v5/place/around?key=${key}&location=${location}&radius=${radius}&types=050000&keywords=${keyword || ''}`;
     } else {
         return res.status(400).send('Invalid map provider');
     }
