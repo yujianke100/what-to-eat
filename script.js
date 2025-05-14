@@ -179,13 +179,24 @@ function pickRandom() {
     if (!randomItem.dataset.custom) {
         const lat = parseFloat(randomItem.dataset.lat);
         const lng = parseFloat(randomItem.dataset.lng);
-        map.setCenter({ lat, lng });
-        if (searchMarker) searchMarker.setMap(null);
-        searchMarker = new google.maps.marker.AdvancedMarkerElement({
-            position: { lat, lng },
-            map,
-            title: result
-        });
+
+        if (mapProvider === 'google') {
+            map.setCenter({ lat, lng });
+            if (searchMarker) searchMarker.setMap(null);
+            searchMarker = new google.maps.marker.AdvancedMarkerElement({
+                position: { lat, lng },
+                map,
+                title: result
+            });
+        } else if (mapProvider === 'amap') {
+            map.setCenter([lng, lat]); // Amap uses [lng, lat] format
+            if (searchMarker) map.remove(searchMarker); // Remove previous marker
+            searchMarker = new AMap.Marker({
+                position: [lng, lat],
+                map,
+                title: result
+            });
+        }
     }
 }
 
