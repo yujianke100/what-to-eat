@@ -105,7 +105,7 @@ function searchRestaurants() {
     const backendProxy = '/proxy';
     const url = mapProvider === 'google'
         ? `${backendProxy}?mapProvider=google&location=${latLng}&radius=${range}&type=restaurant&keyword=${encodeURIComponent(keyword)}&key=${googleApiKey}`
-        : `${backendProxy}?mapProvider=amap&location=${latLng}&radius=${range}&types=050000&keywords=${encodeURIComponent(keyword)}&key=${amapApiKey}`;
+        : `${backendProxy}?mapProvider=amap&location=${latLng}&radius=${range}&types=餐饮服务&keywords=${encodeURIComponent(keyword)}&key=${amapApiKey}`;
 
     fetch(url)
         .then(response => {
