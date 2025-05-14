@@ -73,15 +73,14 @@ function searchRestaurants() {
     const location = map.getCenter(); // Use map center as search location
     const keyword = document.getElementById('keyword').value || 'restaurant';
 
-    const service = new google.maps.places.PlacesService(map);
-    const request = {
+    const place = new google.maps.places.Place({
         location,
         radius: range,
         keyword,
         type: 'restaurant'
-    };
+    });
 
-    service.nearbySearch(request, (results, status) => {
+    place.findNearby((results, status) => {
         if (status === google.maps.places.PlacesServiceStatus.OK) {
             const list = document.getElementById('restaurant-list');
 
